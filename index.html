@@ -9,6 +9,88 @@
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <style>
+        :root {
+            --bg: #eef2f8;
+            --bg-card: #ffffff;
+            --text: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #7c8aa0;
+            --border: #e6ecf4;
+            --border-light: #ecf3f9;
+            --border-input: #cbdde9;
+            --accent: #2266c7;
+            --accent-hover: #1557b0;
+            --badge-bg: #e9f0fa;
+            --project-bg: #ffffff;
+            --project-border: #e9edf2;
+            --project-active-bg: #f0f7ff;
+            --input-bg: #ffffff;
+            --section-bg: #f9fdfe;
+            --section-bg-alt: #fafdff;
+            --section-bg-log: #f3f9fe;
+            --section-border: #e2edf7;
+            --section-border-alt: #e4edf6;
+            --table-border: #ecf3f9;
+            --gantt-track: #e2e8f0;
+            --status-active-bg: #dff9e6;
+            --status-active-text: #146b3a;
+            --status-inactive-bg: #ffe6e5;
+            --status-inactive-text: #b13e3e;
+            --inventory-bg: #f9fcfd;
+            --inventory-border: #eef3fc;
+            --modal-bg: #ffffff;
+            --modal-overlay: rgba(0,0,0,0.4);
+            --planner-accent: #3b6e9e;
+            --planner-feed-text: #2c5a7a;
+            --planner-author-text: #4b6e8a;
+            --calendar-event-active: #2c7da0;
+            --calendar-event-inactive: #b56576;
+            --title-gradient-start: #0f2b3d;
+            --title-gradient-end: #1e5a7e;
+            --card-shadow: 0 6px 14px rgba(0,0,0,0.02);
+        }
+
+        body.dark {
+            --bg: #0f172a;
+            --bg-card: #1e293b;
+            --text: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --border-light: #334155;
+            --border-input: #475569;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --badge-bg: #1e3a5f;
+            --project-bg: #1e293b;
+            --project-border: #334155;
+            --project-active-bg: #1e3a5f;
+            --input-bg: #1e293b;
+            --section-bg: #1a2736;
+            --section-bg-alt: #1a2736;
+            --section-bg-log: #1a2736;
+            --section-border: #2d4a63;
+            --section-border-alt: #2d4a63;
+            --table-border: #334155;
+            --gantt-track: #334155;
+            --status-active-bg: #064e3b;
+            --status-active-text: #6ee7b7;
+            --status-inactive-bg: #450a0a;
+            --status-inactive-text: #fca5a5;
+            --inventory-bg: #1a2736;
+            --inventory-border: #334155;
+            --modal-bg: #1e293b;
+            --modal-overlay: rgba(0,0,0,0.7);
+            --planner-accent: #60a5fa;
+            --planner-feed-text: #93c5fd;
+            --planner-author-text: #60a5fa;
+            --calendar-event-active: #38bdf8;
+            --calendar-event-inactive: #f472b6;
+            --title-gradient-start: #60a5fa;
+            --title-gradient-end: #3b82f6;
+            --card-shadow: 0 6px 14px rgba(0,0,0,0.3);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -16,10 +98,11 @@
         }
 
         body {
-            background: #eef2f8;
+            background: var(--bg);
             font-family: 'Inter', sans-serif;
-            color: #0f172a;
+            color: var(--text);
             padding: 20px 24px;
+            transition: background 0.3s, color 0.3s;
         }
 
         .workspace {
@@ -40,77 +123,143 @@
         .title-section h1 {
             font-size: 1.9rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #0f2b3d, #1e5a7e);
+            background: linear-gradient(135deg, var(--title-gradient-start), var(--title-gradient-end));
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
         }
 
         .title-section p {
-            color: #475569;
+            color: var(--text-secondary);
             font-size: 0.85rem;
         }
 
         .btn {
             border: none;
-            background: white;
+            background: var(--bg-card);
             padding: 8px 20px;
-            border-radius: 40px;
+            border-radius: 10px;
             font-weight: 500;
             font-size: 0.85rem;
             cursor: pointer;
             transition: 0.2s;
             font-family: inherit;
-            border: 1px solid #d0dae8;
+            border: 1px solid var(--border);
+            color: var(--text);
         }
 
         .btn-primary {
-            background: #2266c7;
-            border-color: #2266c7;
+            background: var(--accent);
+            border-color: var(--accent);
             color: white;
         }
 
         .btn-primary:hover {
-            background: #1557b0;
+            background: var(--accent-hover);
             transform: translateY(-1px);
         }
 
         .btn-outline {
-            background: white;
+            background: var(--bg-card);
         }
 
         /* 3 column layout on large screens */
         .dashboard {
             display: grid;
             grid-template-columns: 340px 1fr 360px;
+            gap: 28px;
+            position: relative;
+        }
+
+        /* Column dividers */
+        .column {
+            display: flex;
+            flex-direction: column;
             gap: 24px;
+            padding: 4px;
+        }
+
+        .column-divider-right {
+            border-right: 2px solid var(--border);
+            padding-right: 28px;
+        }
+
+        .column-divider-left {
+            border-left: 2px solid var(--border);
+            padding-left: 28px;
+        }
+
+        body.dark .column-divider-right,
+        body.dark .column-divider-left {
+            border-color: var(--border);
         }
 
         .card {
-            background: white;
-            border-radius: 28px;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.02);
-            border: 1px solid #e6ecf4;
-            padding: 18px 20px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+            padding: 20px;
             transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.dark .card {
+            box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+        }
+
+        /* Colored top accent on cards */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+            opacity: 0.6;
+        }
+
+        .card-accent-blue::before {
+            background: linear-gradient(90deg, #3b82f6, transparent);
+        }
+
+        .card-accent-green::before {
+            background: linear-gradient(90deg, #10b981, transparent);
+        }
+
+        .card-accent-purple::before {
+            background: linear-gradient(90deg, #8b5cf6, transparent);
+        }
+
+        .card-accent-orange::before {
+            background: linear-gradient(90deg, #f59e0b, transparent);
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #eef2fa;
-            padding-bottom: 10px;
-            margin-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+            margin-bottom: 18px;
             flex-wrap: wrap;
         }
 
+        .card-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
         .badge {
-            background: #e9f0fa;
+            background: var(--badge-bg);
             padding: 4px 12px;
             border-radius: 40px;
             font-size: 0.7rem;
             font-weight: 600;
+            color: var(--text);
         }
 
         /* project list */
@@ -123,17 +272,23 @@
         }
 
         .project-item {
-            background: #ffffff;
-            border-radius: 20px;
+            background: var(--project-bg);
+            border-radius: 10px;
             padding: 14px;
-            border: 1px solid #e9edf2;
+            border: 1px solid var(--project-border);
             cursor: pointer;
             transition: 0.1s;
+            margin-bottom: 8px;
         }
 
         .project-item.active {
-            background: #f0f7ff;
-            border-left: 5px solid #2266c7;
+            background: var(--project-active-bg);
+            border-left: 4px solid var(--accent);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        body.dark .project-item.active {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         .task-table {
@@ -144,12 +299,12 @@
 
         .task-table th, .task-table td {
             padding: 10px 6px;
-            border-bottom: 1px solid #ecf3f9;
+            border-bottom: 1px solid var(--table-border);
             text-align: left;
         }
 
-        .status-active { background: #dff9e6; color: #146b3a; padding: 2px 8px; border-radius: 50px; font-size: 0.7rem; display: inline-block; }
-        .status-inactive { background: #ffe6e5; color: #b13e3e; padding: 2px 8px; border-radius: 50px; font-size: 0.7rem; }
+        .status-active { background: var(--status-active-bg); color: var(--status-active-text); padding: 2px 8px; border-radius: 50px; font-size: 0.7rem; display: inline-block; }
+        .status-inactive { background: var(--status-inactive-bg); color: var(--status-inactive-text); padding: 2px 8px; border-radius: 50px; font-size: 0.7rem; }
 
         .icon-btn {
             background: none;
@@ -162,11 +317,28 @@
 
         /* planner notes section */
         .planner-note {
-            background: #fafdff;
-            border-radius: 20px;
-            padding: 14px;
+            background: var(--section-bg-alt);
+            border-radius: 12px;
+            padding: 16px;
             margin-top: 18px;
-            border: 1px solid #e4edf6;
+            border: 1px solid var(--section-border-alt);
+            border-left: 3px solid var(--accent);
+        }
+
+        .section-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 20px 0;
+        }
+
+        .section-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .note-title {
@@ -181,23 +353,49 @@
         textarea {
             width: 100%;
             border-radius: 20px;
-            border: 1px solid #cbdde9;
+            border: 1px solid var(--border-input);
             padding: 12px;
             font-family: inherit;
             font-size: 0.8rem;
             resize: vertical;
+            background: var(--input-bg);
+            color: var(--text);
         }
 
         .inventory-item {
-            background: #f9fcfd;
+            background: var(--inventory-bg);
             border-radius: 18px;
             padding: 12px;
             margin-bottom: 10px;
-            border: 1px solid #eef3fc;
+            border: 1px solid var(--inventory-border);
+        }
+
+        /* dark theme toggle button */
+        #themeToggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        #themeToggle:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
         }
 
         @media (max-width: 1100px) {
-            .dashboard { grid-template-columns: 1fr; gap: 20px; }
+            .dashboard { grid-template-columns: 1fr; gap: 24px; }
+            .column-divider-right { border-right: none; padding-right: 4px; }
+            .column-divider-left { border-left: none; padding-left: 4px; }
         }
     </style>
 </head>
@@ -205,33 +403,37 @@
 <div class="workspace">
     <div class="header">
         <div class="title-section">
-            <h1>📌 FlowForge Enterprise</h1>
-            <p>Projects · Tasks · Daily Planner (Progress & Tomorrow Plan) · Inventory</p>
+            <h1>FLOWFORGE ENTERPRISE</h1>
+            <p>Projects · Tasks · Daily Planner  · Inventory</p>
         </div>
         <div class="action-buttons">
             <button class="btn btn-outline" id="newProjectBtn">➕ New Project</button>
             <button class="btn btn-primary" id="demoDataBtn">🚀 Load Demo</button>
+            <button id="themeToggle" title="Toggle dark theme">🌙</button>
         </div>
     </div>
 
     <div class="dashboard">
         <!-- COLUMN 1: Projects & Contractor Info -->
-        <div class="card">
-            <div class="card-header">
-                <h2>📁 Projects</h2>
-                <div class="badge" id="projectCounter">0</div>
-            </div>
-            <div id="projectsContainer" class="project-list">
-                <div style="padding: 24px; text-align:center; color:#7c8aa0;">No projects yet</div>
+        <div class="column column-divider-right">
+            <div class="card card-accent-blue">
+                <div class="card-header">
+                    <h2>📁 Projects</h2>
+                    <div class="badge" id="projectCounter">0</div>
+                </div>
+                <div id="projectsContainer" class="project-list">
+                    <div style="padding: 24px; text-align:center; color:var(--text-muted);">No projects yet</div>
+                </div>
             </div>
         </div>
 
         <!-- COLUMN 2: Task Management, Gantt, Calendar -->
-        <div class="card">
-            <div class="card-header">
-                <h2 id="selectedProjectTitle">📋 Task Manager</h2>
-                <div class="badge" id="selectedProjectContractor">Contractor: —</div>
-            </div>
+        <div class="column column-divider-left column-divider-right">
+            <div class="card card-accent-green">
+                <div class="card-header">
+                    <h2 id="selectedProjectTitle">📋 Task Manager</h2>
+                    <div class="badge" id="selectedProjectContractor">Contractor: —</div>
+                </div>
             <!-- Task Table with ID, Name, Active, Deadline, Created by, Date -->
             <div style="overflow-x: auto;">
                 <table class="task-table">
@@ -239,32 +441,44 @@
                     <tbody id="taskTableBody"><tr><td colspan="7" style="text-align:center;">Select a project</td></tr></tbody>
                 </table>
             </div>
+
+            <div class="section-divider"></div>
+
             <!-- Add Task Form -->
-            <div style="margin-top: 18px; background:#f9fdfe; border-radius: 20px; padding: 14px;">
-                <div style="font-weight:600; font-size:0.8rem; margin-bottom:8px;">➕ New Task (ID, Name, Deadline, Creator)</div>
+            <div style="background:var(--section-bg); border-radius: 12px; padding: 16px; border: 1px solid var(--border);">
+                <div class="section-label">➕ New Task</div>
                 <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                    <input type="text" id="taskIdInput" placeholder="Task ID" style="flex:1; min-width:80px; padding:8px; border-radius:40px; border:1px solid #cbd5e1;">
-                    <input type="text" id="taskNameInput" placeholder="Task Name" style="flex:2; padding:8px; border-radius:40px;">
-                    <select id="taskActiveSelect" style="padding:8px; border-radius:40px;"><option value="active">Active</option><option value="inactive">Inactive</option></select>
-                    <input type="date" id="taskDeadlineInput" style="padding:8px; border-radius:40px;">
-                    <input type="text" id="taskCreatorInput" placeholder="Created by" style="flex:1; padding:8px; border-radius:40px;">
+                    <input type="text" id="taskIdInput" placeholder="Task ID" style="flex:1; min-width:80px; padding:8px; border-radius:40px; border:1px solid var(--border-input); background:var(--input-bg); color:var(--text);">
+                    <input type="text" id="taskNameInput" placeholder="Task Name" style="flex:2; padding:8px; border-radius:40px; background:var(--input-bg); color:var(--text);">
+                    <select id="taskActiveSelect" style="padding:8px; border-radius:40px; background:var(--input-bg); color:var(--text); border:1px solid var(--border-input);"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+                    <input type="date" id="taskDeadlineInput" style="padding:8px; border-radius:40px; background:var(--input-bg); color:var(--text); border:1px solid var(--border-input);">
+                    <input type="text" id="taskCreatorInput" placeholder="Created by" style="flex:1; padding:8px; border-radius:40px; background:var(--input-bg); color:var(--text);">
                     <button class="btn btn-primary" id="addTaskBtn" style="padding:6px 18px;">Add</button>
                 </div>
             </div>
 
+            <div class="section-divider"></div>
+
             <!-- Simple Gantt Planner View -->
-            <div style="margin-top: 20px; background:#fafdff; border-radius: 20px; padding: 12px; border:1px solid #e2edf7;">
-                <div style="font-weight: 700; margin-bottom: 8px;">📅 Gantt Planner (Task Timeline)</div>
+            <div style="background:var(--section-bg-alt); border-radius: 12px; padding: 14px; border:1px solid var(--section-border);">
+                <div class="section-label">📅 Gantt Planner</div>
                 <div id="ganttChartArea">Select project to see Gantt</div>
             </div>
+
+            <div class="section-divider"></div>
+
             <!-- Calendar widget -->
-            <div id="miniCalendar" style="margin-top: 16px;"></div>
+            <div>
+                <div class="section-label">📆 Calendar</div>
+                <div id="miniCalendar"></div>
+            </div>
+            </div>
         </div>
 
         <!-- COLUMN 3: DAILY PLANNER + INVENTORY MANAGEMENT -->
-        <div style="display: flex; flex-direction: column; gap: 24px;">
+        <div class="column column-divider-left">
             <!-- Daily Planner Section: Today's progress & Tomorrow's plan (in-charged person write) -->
-            <div class="card">
+            <div class="card card-accent-purple">
                 <div class="card-header">
                     <h2>📝 Daily Planner</h2>
                     <div class="badge">In-charged person log</div>
@@ -272,51 +486,51 @@
                 <div class="planner-note">
                     <div class="note-title">🟢 Today's Work Progress</div>
                     <textarea id="todayProgressNote" rows="3" placeholder="Write today's accomplishments, progress, blockers..."></textarea>
-                    <div style="font-size:0.7rem; margin-top: 8px; color:#3b6e9e;">👤 In-charge: <input type="text" id="todayAuthor" placeholder="Your name" style="width:130px; padding:4px; border-radius:20px; border:1px solid #cbd5e1;"></div>
+                    <div style="font-size:0.7rem; margin-top: 8px; color:var(--planner-accent);">👤 In-charge: <input type="text" id="todayAuthor" placeholder="Your name" style="width:130px; padding:4px; border-radius:20px; border:1px solid var(--border-input); background:var(--input-bg); color:var(--text);"></div>
                     <button id="saveTodayBtn" class="btn btn-outline" style="margin-top: 10px; width:100%;">💾 Save Today's Progress</button>
                 </div>
                 <div class="planner-note" style="margin-top: 16px;">
                     <div class="note-title">🔮 Tomorrow's Plan</div>
                     <textarea id="tomorrowPlanNote" rows="3" placeholder="Plan for tomorrow: priorities, tasks, meetings..."></textarea>
-                    <div style="font-size:0.7rem; margin-top: 8px;">👤 In-charge: <input type="text" id="tomorrowAuthor" placeholder="Your name" style="width:130px; padding:4px; border-radius:20px;"></div>
+                    <div style="font-size:0.7rem; margin-top: 8px; color:var(--planner-accent);">👤 In-charge: <input type="text" id="tomorrowAuthor" placeholder="Your name" style="width:130px; padding:4px; border-radius:20px; border:1px solid var(--border-input); background:var(--input-bg); color:var(--text);"></div>
                     <button id="saveTomorrowBtn" class="btn btn-outline" style="margin-top: 10px; width:100%;">📅 Save Tomorrow's Plan</button>
                 </div>
+                <div class="section-divider"></div>
                 <!-- Display last saved entries for transparency (monitor access) -->
-                <div style="margin-top: 16px; background:#f3f9fe; border-radius: 20px; padding: 12px;">
-                    <div style="font-weight:600; font-size:0.75rem;">📋 Last Activity Log (monitor view)</div>
-                    <div id="plannerFeed" style="font-size:0.7rem; margin-top: 8px; max-height: 140px; overflow-y: auto; color:#2c5a7a;"></div>
+                <div style="background:var(--section-bg-log); border-radius: 12px; padding: 14px; border: 1px solid var(--border);">
+                    <div class="section-label">📋 Last Activity Log</div>
+                    <div id="plannerFeed" style="font-size:0.75rem; max-height: 140px; overflow-y: auto; color:var(--planner-feed-text);"></div>
                 </div>
             </div>
 
             <!-- Inventory Management Section -->
-            <div class="card">
+            <div class="card card-accent-orange">
                 <div class="card-header">
                     <h2>📦 Inventory Management</h2>
                     <div class="badge" id="inventoryCount">0 items</div>
                 </div>
                 <div style="max-height: 260px; overflow-y: auto;" id="inventoryList">
-                    <div style="text-align:center; color:#8ba0bc; padding:20px;">No inventory items. Add below.</div>
+                    <div style="text-align:center; color:var(--text-muted); padding:20px;">No inventory items. Add below.</div>
                 </div>
                 <div style="margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap;">
-                    <input type="text" id="invName" placeholder="Item name" style="flex:2; padding:8px; border-radius: 40px; border:1px solid #cbd5e1;">
-                    <input type="number" id="invQty" placeholder="Qty" style="flex:1; padding:8px; border-radius:40px;">
-                    <input type="text" id="invUnit" placeholder="Unit (pcs, kg)" style="flex:1; padding:8px; border-radius:40px;">
+                    <input type="text" id="invName" placeholder="Item name" style="flex:2; padding:8px; border-radius: 40px; border:1px solid var(--border-input); background:var(--input-bg); color:var(--text);">
+                    <input type="number" id="invQty" placeholder="Qty" style="flex:1; padding:8px; border-radius:40px; background:var(--input-bg); color:var(--text);">
+                    <input type="text" id="invUnit" placeholder="Unit (pcs, kg)" style="flex:1; padding:8px; border-radius:40px; background:var(--input-bg); color:var(--text);">
                     <button id="addInventoryBtn" class="btn btn-primary" style="padding:6px 16px;">+ Add</button>
                 </div>
-                <div style="margin-top: 12px; font-size:0.7rem; color:#4b6e8a;">* Track stock & low inventory alerts</div>
+                <div style="margin-top: 12px; font-size:0.7rem; color:var(--planner-author-text);">* Track stock & low inventory alerts</div>
             </div>
         </div>
     </div>
-</div>
 
 <!-- Modal: New Project (with Project No, Contractor, Name) -->
-<div id="projectModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:2000;">
-    <div style="background:white; max-width:480px; width:90%; border-radius:36px; padding:26px;">
-        <h3>🏢 Create Project</h3>
-        <input type="text" id="projectNoInput" placeholder="Project No (e.g., PRJ-001)" style="width:100%; margin:10px 0; padding:12px; border-radius:30px;">
-        <input type="text" id="projectNameInput" placeholder="Project Name" style="width:100%; margin:10px 0; padding:12px; border-radius:30px;">
-        <input type="text" id="contractorNameInput" placeholder="Contractor / Company" style="width:100%; margin:10px 0; padding:12px; border-radius:30px;">
-        <textarea id="projectDescInput" rows="2" placeholder="Description" style="width:100%; border-radius:24px; padding:12px;"></textarea>
+<div id="projectModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--modal-overlay); align-items:center; justify-content:center; z-index:2000;">
+    <div style="background:var(--modal-bg); max-width:480px; width:90%; border-radius:36px; padding:26px;">
+        <h3 style="color:var(--text);">🏢 Create Project</h3>
+        <input type="text" id="projectNoInput" placeholder="Project No (e.g., PRJ-001)" style="width:100%; margin:10px 0; padding:12px; border-radius:30px; border:1px solid var(--border-input); background:var(--input-bg); color:var(--text);">
+        <input type="text" id="projectNameInput" placeholder="Project Name" style="width:100%; margin:10px 0; padding:12px; border-radius:30px; border:1px solid var(--border-input); background:var(--input-bg); color:var(--text);">
+        <input type="text" id="contractorNameInput" placeholder="Contractor / Company" style="width:100%; margin:10px 0; padding:12px; border-radius:30px; border:1px solid var(--border-input); background:var(--input-bg); color:var(--text);">
+        <textarea id="projectDescInput" rows="2" placeholder="Description" style="width:100%; border-radius:24px; padding:12px; border:1px solid var(--border-input); background:var(--input-bg); color:var(--text);"></textarea>
         <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:16px;">
             <button class="btn btn-outline" id="cancelModalBtn">Cancel</button>
             <button class="btn btn-primary" id="confirmProjectBtn">Create</button>
@@ -335,6 +549,25 @@
 
     // Planner entries (today progress & tomorrow plan) with timestamp & author
     let plannerEntries = { todayProgress: [], tomorrowPlan: [] };  // store last 5 each for feed
+
+    // Dark theme
+    const THEME_KEY = 'flowforge_theme';
+    function applyTheme(dark) {
+        document.body.classList.toggle('dark', dark);
+        document.getElementById('themeToggle').textContent = dark ? '☀️' : '🌙';
+        localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+        if(calendarInstance) calendarInstance.render();
+    }
+    function initTheme() {
+        const saved = localStorage.getItem(THEME_KEY);
+        const prefersDark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(prefersDark);
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            applyTheme(!document.body.classList.contains('dark'));
+        });
+    });
 
     // LocalStorage
     const STORAGE_KEY = 'flowforge_ent_pm_inv';
@@ -450,7 +683,8 @@
                 if(leftPercent+widthPercent > 95) widthPercent = 95-leftPercent;
                 const color = task.active==='active' ? '#3b82f6' : '#94a3b8';
                 const taskName = escapeHtml((task.name || '').substring(0,12));
-                ganttHtml += `<div style="display:flex; align-items:center; margin:6px 0;"><div style="width:100px; font-size:0.7rem;">${escapeHtml(task.taskId)}</div><div style="flex:1; background:#e2e8f0; border-radius:20px; height:26px;"><div style="width:${widthPercent}%; margin-left:${leftPercent}%; background:${color}; height:26px; border-radius:20px; font-size:0.65rem; padding-left:6px; color:white;">${taskName}</div></div></div>`;
+                const ganttTrackBg = getComputedStyle(document.documentElement).getPropertyValue('--gantt-track').trim() || '#e2e8f0';
+                ganttHtml += `<div style="display:flex; align-items:center; margin:6px 0;"><div style="width:100px; font-size:0.7rem;">${escapeHtml(task.taskId)}</div><div style="flex:1; background:${ganttTrackBg}; border-radius:20px; height:26px;"><div style="width:${widthPercent}%; margin-left:${leftPercent}%; background:${color}; height:26px; border-radius:20px; font-size:0.65rem; padding-left:6px; color:white;">${taskName}</div></div></div>`;
             }
             ganttDiv.innerHTML = ganttHtml;
         }
@@ -647,6 +881,7 @@
     document.getElementById('saveTomorrowBtn').onclick = saveTomorrowPlan;
     window.onclick = (e) => { if(e.target===modal) modal.style.display='none'; };
 
+    initTheme();
     const loaded = loadAllFromLocal();
     if(!loaded || projects.length===0) loadDemoData();
     else renderAll();
