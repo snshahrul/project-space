@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>FlowForge Enterprise | PM + Daily Planner + Inventory</title>
+    <!-- Google Fonts + FullCalendar + Chart.js -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #eef2f8;
+            font-family: 'Inter', sans-serif;
+            color: #0f172a;
+            padding: 20px 24px;
+        }
+
+        .workspace {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .title-section h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0f2b3d, #1e5a7e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .title-section p {
+            color: #475569;
+            font-size: 0.85rem;
+        }
+
+        .btn {
+            border: none;
+            background: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+            border: 1px solid #d0dae8;
+        }
+
+        .btn-primary {
+            background: #2266c7;
+            border-color: #2266c7;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1557b0;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: white;
+        }
+
+        /* 3 column layout on large screens */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 340px 1fr 360px;
+            gap: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.02);
+            border: 1px solid #e6ecf4;
+            padding: 18px 20px;
+            transition: all 0.2s;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eef2fa;
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: #e9f0fa;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* project list */
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 460px;
+            overflow-y: auto;
+        }
+
+        .project-item {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 14px;
+            border: 1px solid #e9edf2;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .project-item.active {
+            background: #f0f7ff;
+            border-left: 5px solid #2266c7;
+        }
+
+        .task-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+
+        .task-table th, .task-table td {
+            padding: 10px 6px;
+            border-bottom: 1px solid #ecf3f9;
+            text-align: left;
+        }
+
+        .status-active { background: #dff9e6; color: #146b3a; padding: 2px 8px; border-radius: 50px; font-size: 0.7rem; display: inline-block; }
+        .status-inactive { background: #ffe6e5; color: #b13e3e; padding: 2px 8px; border-radius: 50px; font-size: 0.7rem; }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            border-radius: 30px;
+        }
+
+        /* planner notes section */
+        .planner-note {
+            background: #fafdff;
+            border-radius: 20px;
+            padding: 14px;
+            margin-top: 18px;
+            border: 1px solid #e4edf6;
+        }
+
+        .note-title {
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            border-radius: 20px;
+            border: 1px solid #cbdde9;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 0.8rem;
+            resize: vertical;
+        }
+
+        .inventory-item {
+            background: #f9fcfd;
+            border-radius: 18px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #eef3fc;
+        }
+
+        @media (max-width: 1100px) {
+            .dashboard { grid-template-columns: 1fr; gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+<div class="workspace">
+    <div class="header">
+        <div class="title-section">
+            <h1>📌 FlowForge Enterprise</h1>
+            <p>Projects · Tasks · Daily Planner (Progress & Tomorrow Plan) · Inventory</p>
+        </div>
+        <div class="action-buttons">
+            <button class="btn btn-outline" id="newProjectBtn">➕ New Project</button>
+            <button class="btn btn-primary" id="demoDataBtn">🚀 Load Demo</button>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <!-- COLUMN 1: Projects & Contractor Info -->
+        <div class="card">
+            <div class="card-header">
+                <h2>📁 Projects</h2>
+                <div class="badge" id="projectCounter">0</div>
+            </div>
+            <div id="projectsContainer" class="project-list">
+                <div style="padding: 24px; text-align:center; color:#7c8aa0;">No projects yet</div>
+            </div>
+        </div>
+
+        <!-- COLUMN 2: Task Management, Gantt, Calendar -->
+        <div class="card">
+            <div class="card-header">
+                <h2 id="selectedProjectTitle">📋 Task Manager</h2>
+                <div class="badge" id="selectedProjectContractor">Contractor: —</div>
+            </div>
+            <!-- Task Table with ID, Name, Active, Deadline, Created by, Date -->
+            <div style="overflow-x: auto;">
+                <table class="task-table">
+                    <thead><tr><th>Task ID</th><th>Task Name</th><th>Status</th><th>Deadline</th><th>Created by</th><th>Created</th><th></th></tr></thead>
+                    <tbody id="taskTableBody"><tr><td colspan="7" style="text-align:center;">Select a project</td></tr></tbody>
+                </table>
+            </div>
+            <!-- Add Task Form -->
+            <div style="margin-top: 18px; background:#f9fdfe; border-radius: 20px; padding: 14px;">
+                <div style="font-weight:600; font-size:0.8rem; margin-bottom:8px;">➕ New Task (ID, Name, Deadline, Creator)</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <input type="text" id="taskIdInput" placeholder="Task ID" style="flex:1; min-width:80px; padding:8px; border-radius:40px; border:1px solid #cbd5e1;">
+                    <input type="text" id="taskNameInput" placeholder="Task Name" style="flex:2; padding:8px; border-radius:40px;">
+                    <select id="taskActiveSelect" style="padding:8px; border-radius:40px;"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+                    <input type="date" id="taskDeadlineInput" style="padding:8px; border-radius:40px;">
+                    <input type="text" id="taskCreatorInput" placeholder="Created by" style="flex:1; padding:8px; border-radius:40px;">
+                    <button class="btn btn-primary" id="addTaskBtn" style="padding:6px 18px;">Add</button>
+                </div>
+            </div>
+
+            <!-- Simple Gantt Planner View -->
+            <div style="margin-top: 20px; background:#fafdff; border-radius: 20px; padding: 12px; border:1px solid #e2edf7;">
+                <div style="font-weight: 700; margin-bottom: 8px;">📅 Gantt Planner (Task Timeline)</div>
+                <div id="ganttChartArea">Select project to see Gantt</div>
+            </div>
+            <!-- Calendar widget -->
+            <div id="miniCalendar" style="margin-top: 16px;"></div>
+        </div>
+
+        <!-- COLUMN 3: DAILY PLANNER + INVENTORY MANAGEMENT -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Daily Planner Section: Today's progress & Tomorrow's plan (in-charged person write) -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>📝 Daily Planner</h2>
+                    <div class="badge">In-charged person log</div>
+                </div>
+                <div class="planner-note">
+                    <div class="note-title">🟢 Today's Work Progress</div>
+                    <textarea id="todayProgressNote" rows="3" placeholder="Write today's accomplishments, progress, blockers..."></textarea>
+                    <div style="font-size:0.7rem; margin-top: 8px; color:#3b6e9e;">👤 In-charge: <input type="text" id="todayAuthor" placeholder="Your name" style="width:130px; padding:4px; border-radius:20px; border:1px solid #cbd5e1;"></div>
+                    <button id="saveTodayBtn" class="btn btn-outline" style="margin-top: 10px; width:100%;">💾 Save Today's Progress</button>
+                </div>
+                <div class="planner-note" style="margin-top: 16px;">
+                    <div class="note-title">🔮 Tomorrow's Plan</div>
+                    <textarea id="tomorrowPlanNote" rows="3" placeholder="Plan for tomorrow: priorities, tasks, meetings..."></textarea>
+                    <div style="font-size:0.7rem; margin-top: 8px;">👤 In-charge: <input type="text" id="tomorrowAuthor" placeholder="Your name" style="width:130px; padding:4px; border-radius:20px;"></div>
+                    <button id="saveTomorrowBtn" class="btn btn-outline" style="margin-top: 10px; width:100%;">📅 Save Tomorrow's Plan</button>
+                </div>
+                <!-- Display last saved entries for transparency (monitor access) -->
+                <div style="margin-top: 16px; background:#f3f9fe; border-radius: 20px; padding: 12px;">
+                    <div style="font-weight:600; font-size:0.75rem;">📋 Last Activity Log (monitor view)</div>
+                    <div id="plannerFeed" style="font-size:0.7rem; margin-top: 8px; max-height: 140px; overflow-y: auto; color:#2c5a7a;"></div>
+                </div>
+            </div>
+
+            <!-- Inventory Management Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>📦 Inventory Management</h2>
+                    <div class="badge" id="inventoryCount">0 items</div>
+                </div>
+                <div style="max-height: 260px; overflow-y: auto;" id="inventoryList">
+                    <div style="text-align:center; color:#8ba0bc; padding:20px;">No inventory items. Add below.</div>
+                </div>
+                <div style="margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <input type="text" id="invName" placeholder="Item name" style="flex:2; padding:8px; border-radius: 40px; border:1px solid #cbd5e1;">
+                    <input type="number" id="invQty" placeholder="Qty" style="flex:1; padding:8px; border-radius:40px;">
+                    <input type="text" id="invUnit" placeholder="Unit (pcs, kg)" style="flex:1; padding:8px; border-radius:40px;">
+                    <button id="addInventoryBtn" class="btn btn-primary" style="padding:6px 16px;">+ Add</button>
+                </div>
+                <div style="margin-top: 12px; font-size:0.7rem; color:#4b6e8a;">* Track stock & low inventory alerts</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: New Project (with Project No, Contractor, Name) -->
+<div id="projectModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:2000;">
+    <div style="background:white; max-width:480px; width:90%; border-radius:36px; padding:26px;">
+        <h3>🏢 Create Project</h3>
+        <input type="text" id="projectNoInput" placeholder="Project No (e.g., PRJ-001)" style="width:100%; margin:10px 0; padding:12px; border-radius:30px;">
+        <input type="text" id="projectNameInput" placeholder="Project Name" style="width:100%; margin:10px 0; padding:12px; border-radius:30px;">
+        <input type="text" id="contractorNameInput" placeholder="Contractor / Company" style="width:100%; margin:10px 0; padding:12px; border-radius:30px;">
+        <textarea id="projectDescInput" rows="2" placeholder="Description" style="width:100%; border-radius:24px; padding:12px;"></textarea>
+        <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:16px;">
+            <button class="btn btn-outline" id="cancelModalBtn">Cancel</button>
+            <button class="btn btn-primary" id="confirmProjectBtn">Create</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- DATA MODELS ----------
+    let projects = [];          // each: { id, projectNo, name, contractor, description, tasks }
+    let selectedProjectId = null;
+    let calendarInstance = null;
+
+    // Inventory array: { id, name, quantity, unit }
+    let inventoryItems = [];
+
+    // Planner entries (today progress & tomorrow plan) with timestamp & author
+    let plannerEntries = { todayProgress: [], tomorrowPlan: [] };  // store last 5 each for feed
+
+    // LocalStorage
+    const STORAGE_KEY = 'flowforge_ent_pm_inv';
+    function saveAllToLocal() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ projects, selectedProjectId, inventoryItems, plannerEntries }));
+        } catch(e) { console.warn('LocalStorage save failed:', e); }
+    }
+    function loadAllFromLocal() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return false;
+        try {
+            const data = JSON.parse(raw);
+            if(data.projects) projects = data.projects;
+            if(data.selectedProjectId) selectedProjectId = data.selectedProjectId;
+            if(data.inventoryItems) inventoryItems = data.inventoryItems;
+            if(data.plannerEntries) plannerEntries = data.plannerEntries;
+            return true;
+        } catch(e) { return false; }
+    }
+
+    function genId() { return Date.now() + '-' + Math.random().toString(36).substring(2, 8); }
+    function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>"']/g, function(m){ return m==='&'?'&amp;':m==='<'?'&lt;':m==='>'?'&gt;':m==='"'?'&quot;':'&#39;'; }); }
+
+    // Helper render functions
+    function renderProjectsList() {
+        const container = document.getElementById('projectsContainer');
+        if(!projects.length){
+            container.innerHTML = `<div style="padding:28px; text-align:center;">✨ No projects — create one</div>`;
+            document.getElementById('projectCounter').innerText = '0';
+            document.getElementById('selectedProjectTitle').innerHTML = '📋 Task Manager';
+            document.getElementById('selectedProjectContractor').innerHTML = 'Contractor: —';
+            return;
+        }
+        document.getElementById('projectCounter').innerText = `${projects.length}`;
+        let html = '';
+        for(let proj of projects){
+            const activeClass = (selectedProjectId === proj.id) ? 'active' : '';
+            html += `<div class="project-item ${activeClass}" data-proj-id="${proj.id}">
+                        <div class="project-title"><span>📌 ${escapeHtml(proj.projectNo || 'N/A')} - ${escapeHtml(proj.name)}</span></div>
+                        <div class="project-meta">👷 ${escapeHtml(proj.contractor || '—')} | ${proj.tasks?.length || 0} tasks</div>
+                        <div style="font-size:0.7rem;">${escapeHtml(proj.description?.substring(0,50)) || ''}</div>
+                    </div>`;
+        }
+        container.innerHTML = html;
+        document.querySelectorAll('.project-item').forEach(el => {
+            el.addEventListener('click', (e) => {
+                const pid = el.getAttribute('data-proj-id');
+                if(pid) { selectedProjectId = pid; renderAll(); }
+            });
+        });
+        if(selectedProjectId && !projects.find(p=>p.id===selectedProjectId) && projects.length) selectedProjectId = projects[0].id;
+        if(projects.length && !selectedProjectId) selectedProjectId = projects[0].id;
+        if(selectedProjectId){
+            const sel = projects.find(p=>p.id===selectedProjectId);
+            if(sel){
+                document.getElementById('selectedProjectTitle').innerHTML = `📋 ${escapeHtml(sel.name)} (${sel.projectNo})`;
+                document.getElementById('selectedProjectContractor').innerHTML = `Contractor: ${escapeHtml(sel.contractor)}`;
+            }
+        }
+    }
+
+    function renderTasksAndGantt() {
+        const tbody = document.getElementById('taskTableBody');
+        const ganttDiv = document.getElementById('ganttChartArea');
+        if(!selectedProjectId || !projects.find(p=>p.id===selectedProjectId)){
+            tbody.innerHTML = `<tr><td colspan="7">Select a project</td></tr>`;
+            ganttDiv.innerHTML = `<div style="padding:16px; text-align:center;">No project selected</div>`;
+            return;
+        }
+        const project = projects.find(p=>p.id===selectedProjectId);
+        const tasks = project.tasks || [];
+        if(tasks.length===0){
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No tasks — add task with ID, Name, Deadline, Creator</td></tr>`;
+        } else {
+            let rows = '';
+            tasks.forEach(task => {
+                const activeText = task.active === 'active' ? '🟢 Active' : '⚫ Inactive';
+                const activeClass = task.active === 'active' ? 'status-active' : 'status-inactive';
+                rows += `<tr>
+                            <td><strong>${escapeHtml(task.taskId)}</strong></td>
+                            <td>${escapeHtml(task.name)}</td>
+                            <td><span class="${activeClass}">${activeText}</span></td>
+                            <td>${task.deadline || '—'}</td>
+                            <td>${escapeHtml(task.createdBy)}</td>
+                            <td>${task.dateCreated || '—'}</td>
+                            <td><button class="icon-btn delete-task" data-taskid="${task.id}">🗑️</button></td>
+                         </tr>`;
+            });
+            tbody.innerHTML = rows;
+            document.querySelectorAll('.delete-task').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const tid = btn.getAttribute('data-taskid');
+                    deleteTaskById(project.id, tid);
+                });
+            });
+        }
+
+        // Simple Gantt based on deadlines
+        if(tasks.length===0) ganttDiv.innerHTML = `<div style="padding:16px; text-align:center;">Add tasks to see Gantt</div>`;
+        else {
+            let ganttHtml = `<div style="font-size:0.7rem;">⏳ Timeline (today → deadline)</div>`;
+            const today = new Date();
+            for(let task of tasks){
+                let deadlineDate = task.deadline ? new Date(task.deadline) : new Date(today.getTime() + 5*86400000);
+                if(isNaN(deadlineDate)) deadlineDate = new Date(today.getTime() + 5*86400000);
+                let startDate = new Date(deadlineDate);
+                startDate.setDate(deadlineDate.getDate()-4);
+                let offsetDays = Math.max(0, Math.ceil((startDate - today)/86400000));
+                let duration = Math.max(2, Math.ceil((deadlineDate - startDate)/86400000));
+                let leftPercent = (offsetDays/30)*100;
+                let widthPercent = (duration/30)*100;
+                if(leftPercent+widthPercent > 95) widthPercent = 95-leftPercent;
+                const color = task.active==='active' ? '#3b82f6' : '#94a3b8';
+                const taskName = escapeHtml((task.name || '').substring(0,12));
+                ganttHtml += `<div style="display:flex; align-items:center; margin:6px 0;"><div style="width:100px; font-size:0.7rem;">${escapeHtml(task.taskId)}</div><div style="flex:1; background:#e2e8f0; border-radius:20px; height:26px;"><div style="width:${widthPercent}%; margin-left:${leftPercent}%; background:${color}; height:26px; border-radius:20px; font-size:0.65rem; padding-left:6px; color:white;">${taskName}</div></div></div>`;
+            }
+            ganttDiv.innerHTML = ganttHtml;
+        }
+    }
+
+    function deleteTaskById(projId, taskUid) {
+        const proj = projects.find(p=>p.id===projId);
+        if(proj) { proj.tasks = proj.tasks.filter(t => t.id !== taskUid); renderAll(); }
+    }
+
+    function addNewTask() {
+        if(!selectedProjectId) { alert("Select a project first"); return; }
+        const proj = projects.find(p=>p.id===selectedProjectId);
+        if(!proj) return;
+        const taskId = document.getElementById('taskIdInput').value.trim();
+        const name = document.getElementById('taskNameInput').value.trim();
+        const active = document.getElementById('taskActiveSelect').value;
+        const deadline = document.getElementById('taskDeadlineInput').value;
+        const creator = document.getElementById('taskCreatorInput').value.trim();
+        if(!taskId){ alert("Task ID required"); return; }
+        if(!name){ alert("Task Name required"); return; }
+        if(!deadline){ alert("Deadline required"); return; }
+        if(!creator){ alert("Created by required"); return; }
+        const newTask = { id: genId(), taskId, name, active, deadline, createdBy: creator, dateCreated: new Date().toLocaleDateString('en-CA') };
+        if(!proj.tasks) proj.tasks = [];
+        proj.tasks.push(newTask);
+        document.getElementById('taskIdInput').value = '';
+        document.getElementById('taskNameInput').value = '';
+        document.getElementById('taskDeadlineInput').value = '';
+        document.getElementById('taskCreatorInput').value = '';
+        renderAll();
+    }
+
+    function createProject(projNo, name, contractor, desc){
+        const newProj = { id: genId(), projectNo: projNo.trim() || "PRJ-"+Math.floor(Math.random()*999), name: name.trim() || "New Project", contractor: contractor.trim() || "Unknown", description: desc.trim(), tasks: [] };
+        projects.push(newProj);
+        selectedProjectId = newProj.id;
+        renderAll();
+    }
+
+    // Inventory functions
+    function renderInventory() {
+        const container = document.getElementById('inventoryList');
+        const countSpan = document.getElementById('inventoryCount');
+        if(!inventoryItems.length){
+            container.innerHTML = `<div style="text-align:center; color:#8ba0bc; padding:20px;">No inventory items</div>`;
+            countSpan.innerText = '0';
+            return;
+        }
+        countSpan.innerText = inventoryItems.length;
+        let html = '';
+        inventoryItems.forEach(item => {
+            const lowStock = item.quantity < 5 ? '⚠️ Low stock' : '';
+            html += `<div class="inventory-item"><div style="display:flex; justify-content:space-between;"><span><strong>${escapeHtml(item.name)}</strong> (${item.quantity} ${item.unit})</span><button class="icon-btn delete-inv" data-id="${item.id}">🗑️</button></div><div style="font-size:0.7rem;">${lowStock}</div></div>`;
+        });
+        container.innerHTML = html;
+        document.querySelectorAll('.delete-inv').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = btn.getAttribute('data-id');
+                inventoryItems = inventoryItems.filter(i => i.id !== id);
+                renderInventory();
+                saveAllToLocal();
+            });
+        });
+    }
+
+    function addInventoryItem() {
+        const name = document.getElementById('invName').value.trim();
+        const qty = parseInt(document.getElementById('invQty').value);
+        const unit = document.getElementById('invUnit').value.trim();
+        if(!name){ alert("Item name required"); return; }
+        if(isNaN(qty)){ alert("Valid quantity required"); return; }
+        inventoryItems.push({ id: genId(), name, quantity: qty, unit: unit || "pcs" });
+        document.getElementById('invName').value = '';
+        document.getElementById('invQty').value = '';
+        document.getElementById('invUnit').value = '';
+        renderInventory();
+        saveAllToLocal();
+    }
+
+    // Planner save & feed
+    function updatePlannerFeed() {
+        const feedDiv = document.getElementById('plannerFeed');
+        let feedHtml = '';
+        if(plannerEntries.todayProgress.length) {
+            const last = plannerEntries.todayProgress[plannerEntries.todayProgress.length-1];
+            feedHtml += `<div>✅ Today (${last.date}) by ${last.author}: ${last.note.substring(0,70)}...</div>`;
+        }
+        if(plannerEntries.tomorrowPlan.length) {
+            const last = plannerEntries.tomorrowPlan[plannerEntries.tomorrowPlan.length-1];
+            feedHtml += `<div>🔮 Tomorrow plan (${last.date}) by ${last.author}: ${last.note.substring(0,70)}...</div>`;
+        }
+        if(!feedHtml) feedHtml = '<div>No planner notes yet. Write today/tomorrow plan.</div>';
+        feedDiv.innerHTML = feedHtml;
+    }
+
+    function saveTodayProgress() {
+        const note = document.getElementById('todayProgressNote').value.trim();
+        const author = document.getElementById('todayAuthor').value.trim();
+        if(!note){ alert("Write today's work progress"); return; }
+        if(!author) { alert("Enter your name (in-charged)"); return; }
+        const entry = { date: new Date().toLocaleString(), author, note };
+        plannerEntries.todayProgress.push(entry);
+        if(plannerEntries.todayProgress.length > 5) plannerEntries.todayProgress.shift();
+        document.getElementById('todayProgressNote').value = '';
+        document.getElementById('todayAuthor').value = '';
+        updatePlannerFeed();
+        saveAllToLocal();
+        alert("Today's progress saved. Monitor can view updates.");
+    }
+
+    function saveTomorrowPlan() {
+        const note = document.getElementById('tomorrowPlanNote').value.trim();
+        const author = document.getElementById('tomorrowAuthor').value.trim();
+        if(!note){ alert("Write tomorrow's plan"); return; }
+        if(!author) { alert("Enter your name"); return; }
+        const entry = { date: new Date().toLocaleString(), author, note };
+        plannerEntries.tomorrowPlan.push(entry);
+        if(plannerEntries.tomorrowPlan.length > 5) plannerEntries.tomorrowPlan.shift();
+        document.getElementById('tomorrowPlanNote').value = '';
+        document.getElementById('tomorrowAuthor').value = '';
+        updatePlannerFeed();
+        saveAllToLocal();
+        alert("Tomorrow's plan saved. Accessible to all.");
+    }
+
+    // Calendar with tasks as events
+    function updateCalendar() {
+        const calendarEl = document.getElementById('miniCalendar');
+        let events = [];
+        for(let proj of projects){
+            if(proj.tasks){
+                for(let task of proj.tasks){
+                    if(task.deadline){
+                        events.push({ title: `[${proj.projectNo}] ${task.name}`, start: task.deadline, color: task.active==='active'? '#2c7da0' : '#b56576' });
+                    }
+                }
+            }
+        }
+        if(!calendarInstance){
+            calendarInstance = new FullCalendar.Calendar(calendarEl, { initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next', center: 'title', right: 'today' }, height: 'auto', events });
+            calendarInstance.render();
+        } else {
+            calendarInstance.removeAllEvents();
+            calendarInstance.addEventSource(events);
+        }
+    }
+
+    function loadDemoData() {
+        projects = [];
+        const demoProj = { id: genId(), projectNo: "PRJ-ALPHA", name: "AI Dashboard", contractor: "NeuralTech", description: "Real-time analytics", tasks: [
+            { id: genId(), taskId: "T-01", name: "Design API", active: "active", deadline: "2026-05-20", createdBy: "Olivia", dateCreated: "2026-04-10" },
+            { id: genId(), taskId: "T-02", name: "Frontend UI", active: "active", deadline: "2026-06-01", createdBy: "Liam", dateCreated: "2026-04-12" }
+        ]};
+        const demoProj2 = { id: genId(), projectNo: "PRJ-BETA", name: "Mobile App", contractor: "AppWorks", description: "Cross-platform", tasks: [
+            { id: genId(), taskId: "M-01", name: "Auth Module", active: "inactive", deadline: "2026-05-25", createdBy: "Emma", dateCreated: "2026-04-05" }
+        ]};
+        projects.push(demoProj, demoProj2);
+        selectedProjectId = demoProj.id;
+        inventoryItems = [{ id: genId(), name: "Laptop", quantity: 12, unit: "units" }, { id: genId(), name: "Monitor", quantity: 3, unit: "pcs" }];
+        plannerEntries = { todayProgress: [], tomorrowPlan: [] };
+        renderAll();
+    }
+
+    function renderAll() {
+        renderProjectsList();
+        renderTasksAndGantt();
+        renderInventory();
+        updateCalendar();
+        updatePlannerFeed();
+        saveAllToLocal();
+    }
+
+    // Event listeners & modal
+    const modal = document.getElementById('projectModal');
+    document.getElementById('newProjectBtn').onclick = () => modal.style.display = 'flex';
+    document.getElementById('cancelModalBtn').onclick = () => modal.style.display = 'none';
+    document.getElementById('confirmProjectBtn').onclick = () => {
+        const pno = document.getElementById('projectNoInput').value;
+        const pname = document.getElementById('projectNameInput').value;
+        const contr = document.getElementById('contractorNameInput').value;
+        const desc = document.getElementById('projectDescInput').value;
+        createProject(pno, pname, contr, desc);
+        modal.style.display = 'none';
+        document.getElementById('projectNoInput').value = '';
+        document.getElementById('projectNameInput').value = '';
+        document.getElementById('contractorNameInput').value = '';
+        document.getElementById('projectDescInput').value = '';
+    };
+    document.getElementById('demoDataBtn').onclick = () => { if(confirm("Load demo data?")) loadDemoData(); };
+    document.getElementById('addTaskBtn').onclick = addNewTask;
+    document.getElementById('addInventoryBtn').onclick = addInventoryItem;
+    document.getElementById('saveTodayBtn').onclick = saveTodayProgress;
+    document.getElementById('saveTomorrowBtn').onclick = saveTomorrowPlan;
+    window.onclick = (e) => { if(e.target===modal) modal.style.display='none'; };
+
+    const loaded = loadAllFromLocal();
+    if(!loaded || projects.length===0) loadDemoData();
+    else renderAll();
+</script>
+</body>
+</html>
